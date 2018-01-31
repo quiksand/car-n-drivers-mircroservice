@@ -2,15 +2,29 @@
   "name": "car-n-drivers-microservice",
   "version": "1.0.0",
   "description": "A microservice supporting driver communications for Car-N, the (fake, erm, that is, uh, not real) rideshare company!",
-  "repository": "https://github.com/quiksand/car-n-drivers-mircroservice.git"
+  "repository": "https://github.com/quiksand/car-n-drivers-mircroservice.git",
   "main": "index.js",
   "scripts": {
+    "start": "node server/index.js",
+    "start-dev": "nodemon server/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["Car-N", "microservice", "drivers"],
+  "keywords": [
+    "Car-N",
+    "microservice",
+    "drivers"
+  ],
   "author": "Cody Schindler (quiksand)",
   "license": "MIT",
   "devDependencies": {
     "nodemon": "^1.14.11"
+  },
+  "dependencies": {
+    "dotenv": "^5.0.0",
+    "koa": "^2.4.1",
+    "koa-bodyparser": "^4.2.0",
+    "koa-helmet": "^3.3.0",
+    "koa-router": "^7.4.0",
+    "redis": "^2.8.0"
   }
 }

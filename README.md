@@ -1,10 +1,10 @@
-# Project Name
+# Car-N Drivers Microservice
 
-The project description
+A microservice for handling driver interactions for Car-N. Car-N is an exercise in modeling the backend services for a rideshare company such as Uber or Lyft. This particular service handles driver interactions, ride matching, and driver tracking. 
 
 ## Roadmap
 
-View the project roadmap [here](LINK_TO_DOC)
+View the project roadmap [here](https://docs.google.com/document/d/1GFg0mPHhlBlhyUK-75ox74j_zcL-4kWFIGhK-U0ctKY/edit#)
 
 ## Contributing
 
@@ -26,7 +26,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
 - Node 6.9.x
 - Redis 3.2.x
-- Postgresql 9.6.x
 - etc
 
 ## Other Information
