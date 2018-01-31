@@ -1,17 +1,13 @@
 const Router = require('koa-router');
-const KoaBody = require('koa-body');
-  // { getId, list, createItem, updateItem, removeItem } = require('../controllers/indexController');
-
 const router = new Router();
+const sessions = require('./sessions');
+const tracking = require('./tracking');
+const rideRequests = require('./rides');
 
-// router
-//   .get('/users', list)
-//   .get('/users/:id', getId)
-//   .post('/users/', KoaBody(), createItem)
-//   .put('/users/:id', KoaBody(), updateItem)
-//   .delete('/users/:id', removeItem);
+router.post('/drivers/login', sessions.login);
+router.post('/drivers/logout', sessions.logout);
+router.post('/request', rideRequests.requestRide);
+router.post('/drivers/match', rideRequests.match)
+router.put('/drivers/track', tracking.updateLocation);
 
-// module.exports = {
-//   routes() { return router.routes() },
-//   allowedMethods() { return router.allowedMethods() }
-// };
+module.exports = router.routes.bind(router)
