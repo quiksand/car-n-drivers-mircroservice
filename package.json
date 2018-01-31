@@ -1,0 +1,16 @@
+{
+  "name": "car-n-drivers-microservice",
+  "version": "1.0.0",
+  "description": "A microservice supporting driver communications for Car-N, the (fake, erm, that is, uh, not real) rideshare company!",
+  "repository": "https://github.com/quiksand/car-n-drivers-mircroservice.git"
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["Car-N", "microservice", "drivers"],
+  "author": "Cody Schindler (quiksand)",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^1.14.11"
+  }
+}
