@@ -9,7 +9,7 @@ let hideLog = bool => {
   console.log = bool ? () => {} : log;
 };
 
-const fname = './database/data/driverData/driverData.txt';
+const fname = './database/data/driverData/driverDataMore.txt';
 const reader = readline.createInterface(fs.createReadStream(fname));
 const client = new elasticsearch.Client({
   host: 'localhost:9200'
@@ -137,8 +137,9 @@ reader.on('pause', () => {
   // insert into db
   client.bulk({ body: toInsert }, (err, resp) => {
     if (err) { 
-      console.log(err) 
-      reader.pause();
+      // console.log(err) 
+      // reader.pause();
+      process.exit();      
     }
   });
   cleanup();
@@ -158,8 +159,9 @@ reader.on('close', () => {
   if (toInsert.length > 0) {
     client.bulk({ body: toInsert }, (err, resp) => {
       if (err) {
-        console.log(err)
-        reader.pause();
+        // console.log(err)
+        // reader.pause();
+        process.exit();
       }
     });
     cleanup();

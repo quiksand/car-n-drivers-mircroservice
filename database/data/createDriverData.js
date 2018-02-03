@@ -115,7 +115,7 @@ const createDriver = () => {
 };
 
 progress.init(100); //initialize counter
-let numToWrite = 10000000; //the number of lines to write
+let numToWrite = 10100000; //the number of lines to write
 let fname = './database/data/driverData/driverData.txt'; //file name to write to
 let stream = fs.createWriteStream(fname);
 let createAndWrite = () => {
