@@ -22,14 +22,12 @@
   "devDependencies": {
     "faker": "^4.1.0",
     "nodemon": "^1.14.11",
-    "progress": "^2.0.0",
     "progress-barzz": "^1.0.2",
     "uuid": "^3.2.1"
   },
   "dependencies": {
     "dotenv": "^5.0.0",
     "elasticsearch": "^14.1.0",
-    "gauge": "^2.7.4",
     "koa": "^2.4.1",
     "koa-body": "^2.5.0",
     "koa-helmet": "^3.3.0",

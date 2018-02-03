@@ -1,5 +1,5 @@
 require('dotenv').config();
-let db = require('../database');
+// let db = require('../database');
 let Koa = require('koa');
 const routes = require('./routes');
 let app = new Koa();

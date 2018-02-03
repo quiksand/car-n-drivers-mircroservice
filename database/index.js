@@ -5,17 +5,24 @@ const client = new elasticsearch.Client({
   log: 'trace'
 });
 
-// const data = require('./data/throwaway.json')
-// console.log(data[1])
-// client.ping({
-//   // ping usually has a 3000ms timeout
-//   requestTimeout: 1000
-// }, function (error) {
-//   if (error) {
-//     console.trace('elasticsearch cluster is down!');
-//   } else {
-//     console.warn('All is well');
-//   }
-// });
+const getDriverById = (DriverId) => {
+  return new Promise((resolve, reject) => {
+    client.get({
+      index: 'drivers',
+      type: 'driver',
+      id: DriverId
+    }, (error, response) => {
+      if (error) {
+        reject(error)
+      }
+      else {
+        resolve(response._source)
+      }
+    })
+  })
+};
 
-module.exports.esClient = client;
+module.exports = {
+  esClient: client,
+  getDriverById: getDriverById
+}

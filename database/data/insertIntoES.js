@@ -9,10 +9,11 @@ let hideLog = bool => {
   console.log = bool ? () => {} : log;
 };
 
-const fname = './database/data/driverData/driverDataMore.txt';
+const fname = './database/data/driverData/driverData.txt';
 const reader = readline.createInterface(fs.createReadStream(fname));
 const client = new elasticsearch.Client({
-  host: 'localhost:9200'
+  host: 'localhost:9200',
+  requestTimeout: Infinity
 });
 
 //{"id":"421a6057-c321-40ad-bab1-3361c8c77931","name_first":"Mathew","name_last":"Beer","password":"d854373860","dl_number":"W2404984","email":"Gustave61@yahoo.com","phone":"763.916.3726 x75339","license_plate":"2FPU380","car_make":"McLaren","car_model":"MP4-12C","car_year":2014,"address_city":"San Jose","address_state":"CA","address_zip":"94102","last_zip":"94102","last_lat":37.783783,"last_lng":-122.4114007},
@@ -23,11 +24,13 @@ client.indices.putMapping({
   body: {
     properties: {
       "id": {
-        "type": "text"
+        "type": "text",
+        "store": true
       },
       "name_first": {
         "type": "text",
-        "index": false
+        "index": false,
+        "store": true
       },
       "name_last": {
         "type": "text",
@@ -47,23 +50,28 @@ client.indices.putMapping({
       },
       "phone": {
         "type": "text",
-        "index": false
+        "index": false,
+        "store": true
       },
       "license_plate": {
         "type": "text",
-        "index": false
+        "index": false,
+        "store": true
       },
       "car_make": {
         "type": "text",
-        "index": false
+        "index": false,
+        "store": true
       },
       "car_model": {
         "type": "text",
-        "index": false
+        "index": false,
+        "store": true
       },
       "car_year": {
         "type": "integer",
-        "index": false
+        "index": false,
+        "store": true
       },
       "address_city": {
         "type": "text",
@@ -79,15 +87,18 @@ client.indices.putMapping({
       },
       "last_zip": {
         "type": "text",
-        "index": false
+        "index": false,
+        "store": true
       },
       "last_lat": {
         "type": "float",
-        "index": false
+        "index": false,
+        "store": true
       },
       "last_lng": {
         "type": "float",
-        "index": false
+        "index": false,
+        "store": true
       }
     }
   }
@@ -100,11 +111,9 @@ client.indices.putMapping({
   }
 });
 
-
-
 let total = 0;
 let numberToInsert = 50000;
-let waitTime = 5000;
+let waitTime = 10000;
 let toInsert = [];
 progress.init(10000000 / numberToInsert);
 console.log(`Est. ${((10000000 / numberToInsert) * (waitTime / 1000) / 60).toFixed(1)} minutes`)
@@ -137,9 +146,9 @@ reader.on('pause', () => {
   // insert into db
   client.bulk({ body: toInsert }, (err, resp) => {
     if (err) { 
-      // console.log(err) 
+      console.log(err);
       // reader.pause();
-      process.exit();      
+      process.exit();
     }
   });
   cleanup();
@@ -161,10 +170,10 @@ reader.on('close', () => {
       if (err) {
         // console.log(err)
         // reader.pause();
+        console.log('an error may have occurred');
         process.exit();
       }
     });
-    cleanup();
   }
   console.log(`wrote ${total} lines from ${fname} to ES in ${((Date.now() - t0) / 60000).toFixed(1)} minutes`);
 });
