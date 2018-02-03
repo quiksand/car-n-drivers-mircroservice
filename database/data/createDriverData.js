@@ -1,7 +1,7 @@
-//this file will generate 100 ~42MB json files
-//run with 'npm run gendata
-
-const { performance } = require('perf_hooks');
+//this file will generate a 4.2GB txt file of 10M newline-delimited json objects
+//run with 'npm run gendata'
+const progress = require('progress-barzz');
+const readline = require('readline');
 const uuid = require('uuid/v4');
 const faker = require('faker');
 const fs = require('fs');
@@ -88,7 +88,7 @@ const getLoc = () => {
   let obj = pickOne(sf_zips);
   let zip = Object.keys(obj)[0];
   return { zip: zip, lat: obj[zip][0], lng: obj[zip][1] };
-}
+};
 
 const createDriver = () => {
   let a = getCar();
@@ -114,93 +114,25 @@ const createDriver = () => {
   });
 };
 
-const writeAll = (destination, count) => {
-  let stream = fs.createWriteStream(destination);  
-  stream.write('[\n');
-  let driver;
-  for (var i = 0; i < count - 1; i++) {
-    driver = createDriver();
-    stream.write(driver);
-    stream.write(',\n');
+progress.init(100); //initialize counter
+let numToWrite = 10000000; //the number of lines to write
+let fname = './database/data/driverData/driverData.txt'; //file name to write to
+let stream = fs.createWriteStream(fname);
+let createAndWrite = () => {
+  let ok = true; //will become false when the write buffer is filled, and we need to pause until it is cleared
+  while (numToWrite > 0 && ok) {
+    let driver = createDriver();
+    ok = stream.write(driver + '\n');
+    numToWrite--;
+    if (numToWrite % 100000 === 0) {//this block just writes the status to the console
+      readline.cursorTo(process.stdout, 0);
+      process.stdout.write(progress.tick());
+      if(numToWrite === 0) {
+        console.log();
+      }
+    }
   }
-  driver = createDriver();
-  stream.write(driver);  
-  stream.write('\n]');
-  stream.end();
-  stream = null;
 }
-
-const generateHeapDumpAndStats = () => {
-  //Force garbage collection every time this function is called
-  var heapUsed = process.memoryUsage().heapUsed;
-  console.log("Program is using " + (heapUsed / 1048576).toFixed(3) + " MB of Heap.")
-};
-
-let times = [];
-for (let i = 0; i < 100; i++) {
-  let t0 = performance.now();
-  let fname = `./database/data/driverData/drivers-${i}.json`;
-  writeAll(fname, 100000);
-  generateHeapDumpAndStats();
-  let diff = performance.now() - t0;
-  times.push(diff);
-  console.log('created 100000 entries in ' + fname + ' in ' + (diff / 1000)+ 's')
-};
-let total = times.reduce((a, b) => a + b);
-let average = total / 100;
-console.log('total time: ' + (total / 60000) + 'min');
-console.log('average write time: ' + (average / 1000) + 's');
-
-
-
-// // Declare required packages
-// var _ = require('underscore')
-// var es = require('elasticsearch')
-// // Set ElasticSearch location and port
-// var client = new es.Client({
-//   host: 'localhost:9200'
-// });
-
-// // sample JSON data
-// var xjson = "{\"samplealert\":" + "    [" + "        {\"aid\" : 1,\"alertid\":\"Nothing\",\"action\":\"Action no. 1\"}," + "        {\"aid\" : 2,\"alertid\":\"Alarm\",\"action\":\"Action no. 2\"}" + "    ]" + "}";
-
-// // Function to convert string to JSON format
-// function readJson(data) {
-//   var obj = JSON.parse(data);
-//   return (obj)
-// };
-
-// // Contain JSON data to "tmpjson"
-// var tmpjson = readJson(xjson);
-// // Extract property of "samplealert" to "finaljson"
-// var finaljson = tmpjson.samplealert;
-
-// // Find number of document of "finaljson"
-// var xloop = _.size(finaljson);
-
-// // Declare variable to contain body of JSON data for loading to ElasticSearch
-// var br = [];
-
-// // Function to create body for loading to ElasticSearch
-// function create_bulk(bulk_request) {
-//   var obj
-
-//   for (i = 0; i < xloop; i++) {
-//     obj = finaljson[i]
-//     // Insert header of record
-//     bulk_request.push({ index: { _index: 'jsindex', _type: 'jstype', _id: i + 1 } });
-//     bulk_request.push(obj);
-//   }
-//   return bulk_request;
-// };
-
-// // Call function to get body for loading
-// create_bulk(br);
-
-// // Standard function of ElasticSearch to use bulk command
-// client.bulk(
-//   {
-//     body: br
-//   }, function (err, resp) {
-//     console.log(err);
-//   });
+stream.on('drain', createAndWrite) //restart writing once the write buffer has cleared
+stream.on('close', () => {console.log('An error may have occurred in data generation')})
+createAndWrite(); //begin

@@ -18,8 +18,8 @@ const client = new elasticsearch.Client({
 //{"id":"421a6057-c321-40ad-bab1-3361c8c77931","name_first":"Mathew","name_last":"Beer","password":"d854373860","dl_number":"W2404984","email":"Gustave61@yahoo.com","phone":"763.916.3726 x75339","license_plate":"2FPU380","car_make":"McLaren","car_model":"MP4-12C","car_year":2014,"address_city":"San Jose","address_state":"CA","address_zip":"94102","last_zip":"94102","last_lat":37.783783,"last_lng":-122.4114007},
 
 client.indices.putMapping({
-  index: "drivers",
-  type: "driver",
+  index: "bloop",
+  type: "drivey",
   body: {
     properties: {
       "id": {
@@ -103,11 +103,11 @@ client.indices.putMapping({
 
 
 let total = 0;
-let numberToInsert = 50000;
-let waitTime = 5000;
+let numberToInsert = 5;
+let waitTime = 1000;
 let toInsert = [];
-progress.init(10000000 / numberToInsert);
-console.log(`Est. ${((10000000 / numberToInsert) * (waitTime / 1000) / 60).toFixed(1)} minutes`)
+progress.init(100 / numberToInsert);
+console.log(`Est. ${((100 / numberToInsert) * (waitTime / 1000) / 60).toFixed(1)} minutes`)
 
 let cleanup = () => {
   // clear array
@@ -124,7 +124,7 @@ let cleanup = () => {
 
 reader.on('line', line => {
   let json = JSON.parse(line);
-  toInsert.push({ index: { _index: 'drivers', _type: 'driver', _id: json.id } });
+  toInsert.push({ index: { _index: 'bloop', _type: 'drivey', _id: json.id } });
   toInsert.push(json);
   total++;
   if (toInsert.length === 2 * numberToInsert) {
