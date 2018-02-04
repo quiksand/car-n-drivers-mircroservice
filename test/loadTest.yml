@@ -1,0 +1,21 @@
+config:
+  target: 'http://127.0.0.1:3000'
+  phases:
+    - duration: 10
+      arrivalRate: 1
+  payload:
+      - path: "./payload.csv"
+        fields:
+          - "driverId"
+  # defaults:
+    # headers:
+    #   x-my-service-auth: '987401838271002188298567'
+scenarios:
+  - name: "Login"
+    flow:
+    - loop: 
+        - post:
+            url: "/drivers/login"
+            json:
+              driverId: "{{ driverId }}"
+      count: 1000

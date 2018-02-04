@@ -1,19 +1,28 @@
-const KoaBody = require('koa-body');
-const db = require('../../database');
+const dataStore = require('../../database');
+const db = dataStore.db;
+const cache = dataStore.cache;
 
 const login = async (ctx, next) => {
-  console.log('TODO: Driver Login Function')
-  let driver = await db.getDriverById("0b485a72-da09-4d75-a033-412490a63774");
-  console.log(driver.name_first)
-  console.log(ctx.request.body);
-  ctx.body = driver.name_first;
-  ctx.status = 201;
+  try {
+    let driver = await db.getDriverById(ctx.request.body.driverId);
+    //this is probably where you'd do some auth, if you were so inclined :P
+    //but nah, we're pretty trusting here at Car'n
+    cache.activateDriver(driver._source);
+    ctx.status = 200;
+  } catch(err) {
+    ctx.status = 404;
+  }
+  console.log('made it')
 }
 
 const logout = async (ctx, next) => {
-  console.log('TODO: Driver Logout Function')
-  ctx.body = 'logout successful'
-  ctx.status = 201;
+  try {
+    let driver = await db.getDriverById(ctx.request.body.driverId);
+    cache.deactivateDriver(driver._source);
+    ctx.status = 200;
+  } catch (err) {
+    ctx.status = 404;
+  }
 }
 
 module.exports = {
