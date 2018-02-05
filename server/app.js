@@ -1,4 +1,3 @@
-require('newrelic');
 require('dotenv').config();
 require('../lib');
 const Koa = require('koa');
