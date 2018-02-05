@@ -1,8 +1,9 @@
 config:
   target: 'http://127.0.0.1:3000'
   phases:
-    - duration: 10
-      arrivalRate: 1
+    - duration: 60
+      arrivalRate: 10
+      rampTo: 1000
   payload:
       - path: "./payload.csv"
         fields:
@@ -13,9 +14,13 @@ config:
 scenarios:
   - name: "Login"
     flow:
-    - loop: 
-        - post:
-            url: "/drivers/login"
-            json:
-              driverId: "{{ driverId }}"
-      count: 1000
+    - post:
+        url: "/drivers/login"
+        json:
+          driverId: "{{ driverId }}"
+  # - name: "Logout"
+  #   flow:
+  #   - post:
+  #       url: "/drivers/logout"
+  #       json:
+  #         driverId: "{{ driverId }}"

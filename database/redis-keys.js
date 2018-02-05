@@ -20,9 +20,13 @@ const zip = (id) => {
   return `zip:${id}`;
 };
 
+const geocoords = 'driver_locations';
+
 module.exports = {
   info: info,
   lat: lat,
   lng: lng,
-  zip: zip
+  zip: zip,
+  geo: geo,
+  geocoords: geocoords
 }

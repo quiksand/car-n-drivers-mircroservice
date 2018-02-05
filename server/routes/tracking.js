@@ -1,3 +1,4 @@
+const cache = require('../../database').cache;
 
 const updateLocation = async (ctx, next) => {
   console.log('TODO: Update Driver Location Function')

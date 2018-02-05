@@ -2,7 +2,7 @@ const dataStore = require('../../database');
 const db = dataStore.db;
 const cache = dataStore.cache;
 
-const login = async (ctx, next) => {
+const login = async (ctx) => {
   try {
     let driver = await db.getDriverById(ctx.request.body.driverId);
     //this is probably where you'd do some auth, if you were so inclined :P
@@ -12,10 +12,9 @@ const login = async (ctx, next) => {
   } catch(err) {
     ctx.status = 404;
   }
-  console.log('made it')
 }
 
-const logout = async (ctx, next) => {
+const logout = async (ctx) => {
   try {
     let driver = await db.getDriverById(ctx.request.body.driverId);
     cache.deactivateDriver(driver._source);

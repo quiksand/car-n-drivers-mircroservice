@@ -1,15 +1,5 @@
-require('dotenv').config();
-// let db = require('../database');
-let Koa = require('koa');
-const routes = require('./routes');
-let app = new Koa();
-
-
-app.use(routes());
-// app.use(async ctx => {
-//   // console.log(ctx)
-//   ctx.body = 'Hello World Yo';
-// });
+require('newrelic');
+const app = require('./app');
 
 app.listen(process.env.PORT, () => {
   console.log('Server listening on port ' + process.env.PORT);
