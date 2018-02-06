@@ -7,16 +7,18 @@ client.on('error', (err) => {
 });
 
 const activateDriver = async (driverInfo) => {
+  // console.log(driverInfo)
   client.set(key.info(driverInfo.id), JSON.stringify(driverInfo));
   client.set(key.zip(driverInfo.id), driverInfo.last_zip);
   client.geoadd(key.geocoords, `${driverInfo.last_lng}`, `${driverInfo.last_lat}`, key.geo(driverInfo.id));
+  // client.get(key.info(driverInfo.id), (err, res) => { console.log(res)})
   return true;
 };
 
 const deactivateDriver = async (driverId) => {
   //remove a driver from the redis cache
   client.del(key.info(driverId));
-  client.del(key.zip(driveId));
+  client.del(key.zip(driverId));
   client.zrem(key.geocoords, key.geo(driverId));
 };
 
@@ -61,7 +63,7 @@ const getDriverLocation = async (driverId) => {
 };
 
 module.exports = {
-  redis: client,
+  client: client,
   activateDriver: activateDriver,
   deactivateDriver: deactivateDriver,
   countDriversInZip: countDriversInZip,

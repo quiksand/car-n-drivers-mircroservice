@@ -5,7 +5,7 @@ config:
       arrivalRate: 10
       rampTo: 1000
   payload:
-      - path: "./payload.csv"
+      - path: "./data/payload.csv"
         fields:
           - "driverId"
   # defaults:

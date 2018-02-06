@@ -7,8 +7,9 @@
   "scripts": {
     "start": "node server/index.js",
     "gendata": "node database/data/createDriverData.js",
+    "gentestdata": "node test/data/createTestData.js",
     "filldb": "node database/data/insertIntoES.js",
-    "test": "mocha test/ --exit",
+    "test": "mocha test/index.js --exit",
     "loadtest": "artillery run ./test/loadTest.yml",
     "start-dev": "nodemon server/index.js"
   },
