@@ -5,10 +5,9 @@ const sessions = require('./sessions');
 const tracking = require('./tracking');
 const rideRequests = require('./rides');
 
+router.put('/drivers/track', koaBody(), tracking.updateLocation);
 router.post('/drivers/login', koaBody(), sessions.login);
 router.post('/drivers/logout', koaBody(), sessions.logout);
-router.post('/request', rideRequests.requestRide);
-router.post('/drivers/match', rideRequests.match);
-router.put('/drivers/track', tracking.updateLocation);
+router.post('/request', koaBody(), rideRequests.requestRide);
 
 module.exports = router.routes.bind(router);

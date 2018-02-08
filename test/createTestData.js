@@ -25,7 +25,6 @@ reader.on('line', line => {
       info.push(driverInfo);
       ok = writer.write(driverInfo.id + ',\n');
       if (count === numEntries) {
-        // writer.end();
         reader.close();
       } 
       if (!ok) {

@@ -20,9 +20,9 @@ const driverIdInCache = (driverID) => {
 
 };
 
-const removeDriverFromCache = (driverID) => {
+// const removeDriverFromCache = (driverID) => {
 
-};
+// };
 
 module.exports = {
   getRandomDriverId: getRandomDriverId,

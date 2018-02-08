@@ -35,13 +35,23 @@ const countDriversInZip = async (zip) => {
 const findDriversWithin = async (lat, lng, r) => {
   //return a list of the nearest drivers in a given radius, sorted closest to furthest
   let drivers = await new Promise((res, rej) => {
-    client.georadius(key.geocoords, `${lng}`, `${lat}`, `${r}`, 'm', 'WITHCOORDS', 'WITHDIST', (err, resp) => {
-      if (err) { rej(err); }
-      else { res(resp); }
-    });
+    client.georadius(
+      key.geocoords, 
+      `${lng}`, 
+      `${lat}`, 
+      r, 'm', 
+      'WITHCOORD', 
+      'WITHDIST', 
+      (err, resp) => {
+        if (err) { rej(err); }
+        else { res(resp); }
+      });
   });
-  console.log(drivers);
-  return drivers;
+  let results = [];
+  for (let i = 0; i < drivers.length; i++) {
+    results.push(drivers[i][0].slice(4)); //get rig of 'geo:'
+  }
+  return results;
 };
 
 const getDriverLocation = async (driverId) => {
