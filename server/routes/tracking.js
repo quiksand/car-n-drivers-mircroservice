@@ -1,9 +1,13 @@
 const cache = require('../../database').cache;
 
-const updateLocation = async (ctx, next) => {
-  console.log('TODO: Update Driver Location Function')
-  ctx.body = 'updating driver location successful'
-  ctx.status = 201;
+const updateLocation = async ctx => {
+  cache.trackDriver(
+    ctx.request.body.driverId,
+    ctx.request.body.lat,
+    ctx.request.body.lng,
+    ctx.request.body.zip,
+  );
+  ctx.status = 204;
 }
 
 module.exports = {

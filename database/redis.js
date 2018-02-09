@@ -1,22 +1,29 @@
+const { promisify } = require('util');
 const key = require('./redis-keys');
 const redis = require('redis');
 const client = redis.createClient();
+const getAsync = promisify(client.get).bind(client);
+const geopos = promisify(client.geopos).bind(client);
+const georadius = promisify(client.georadius).bind(client);
+const getKeysAsync = promisify(client.keys).bind(client);
+const mgetAsync = promisify(client.mget).bind(client);
 
 client.on('error', (err) => {
   console.log(err);
 });
 
 const activateDriver = async (driverInfo) => {
-  // console.log(driverInfo)
   client.set(key.info(driverInfo.id), JSON.stringify(driverInfo));
   client.set(key.zip(driverInfo.id), driverInfo.last_zip);
   client.geoadd(key.geocoords, `${driverInfo.last_lng}`, `${driverInfo.last_lat}`, key.geo(driverInfo.id));
-  // client.get(key.info(driverInfo.id), (err, res) => { console.log(res)})
+  client.incr(key.zipCode(driverInfo.last_zip));
   return true;
 };
 
-const deactivateDriver = async (driverId) => {
+const deactivateDriver = async driverId => {
   //remove a driver from the redis cache
+  let zip = await getAsync(key.zip(driverId));
+  client.decr(key.zipCode(zip));
   client.del(key.info(driverId));
   client.del(key.zip(driverId));
   client.zrem(key.geocoords, key.geo(driverId));
@@ -24,29 +31,34 @@ const deactivateDriver = async (driverId) => {
 
 const trackDriver = async (driverId, lat, lng, zip) => {
   //update a driver's location in the cache
+  let oldZip = await getAsync(key.zip(driverId));
   client.geoadd(key.geocoords, `${lng}`, `${lat}`, key.geo(driverId));
   client.set(key.zip(driverId), zip);
+  client.decr(key.zipCode(oldZip));  
+  client.incr(key.zipCode(zip));  
 };
 
-const countDriversInZip = async (zip) => {
-  //get all the drivers in zip
+const countDriversInZip = async () => {
+  //get all the drivers in all the zips in all the cache
+  let results = {};
+  let allZips = await getKeysAsync(key.zipCode('*'));
+  for (let i = 0; i < allZips.length; i++) {
+    let count = await getAsync(allZips[i]);
+    results[key.un.zipCode(allZips[i])] = count;
+  }
+  return results;
 };
 
 const findDriversWithin = async (lat, lng, r) => {
   //return a list of the nearest drivers in a given radius, sorted closest to furthest
-  let drivers = await new Promise((res, rej) => {
-    client.georadius(
-      key.geocoords, 
-      `${lng}`, 
-      `${lat}`, 
-      r, 'm', 
-      'WITHCOORD', 
-      'WITHDIST', 
-      (err, resp) => {
-        if (err) { rej(err); }
-        else { res(resp); }
-      });
-  });
+  let drivers = await georadius(
+      key.geocoords,
+      `${lng}`,
+      `${lat}`,
+      r, 'm',
+      'WITHCOORD',
+      'WITHDIST'
+      );
   let results = [];
   for (let i = 0; i < drivers.length; i++) {
     results.push(drivers[i][0].slice(4)); //get rig of 'geo:'
@@ -54,22 +66,18 @@ const findDriversWithin = async (lat, lng, r) => {
   return results;
 };
 
-const getDriverLocation = async (driverId) => {
+const getDriverLocation = async driverId => {
   //get a driver's location and zip
-  let zip = await new Promise((res, rej) => {
-    client.get(key.zip, (err, resp) => {
-      if (err) { rej(err); }
-      else { res(resp); }
-    });
-  });
-  let lnglat = await new Promise((res, rej) => {
-    client.geopos(key.geocoords, key.geo(driverId), (err, resp) => {
-      if (err) { rej(err); }
-      else { res(resp); }
-    });
-  });
-  console.log(zip, lnglat);  
-  return {last_zip: zip, last_lat: lnglat[1], last_lng: lnglat[0]};
+  let zip = await getAsync(key.zip(driverId));
+  let lnglat = await geopos(key.geocoords, key.geo(driverId));
+  return { last_zip: zip, last_lat: lnglat[0][1], last_lng: lnglat[0][0] };
+};
+
+const deleteCache = async () => {
+  let keys = await getKeysAsync('*');
+  for (let key = 0; key < keys.length; key++) {
+    client.del(keys[key]);
+  }
 };
 
 module.exports = {
@@ -79,5 +87,6 @@ module.exports = {
   countDriversInZip: countDriversInZip,
   trackDriver: trackDriver,
   getDriverLocation: getDriverLocation,
-  findDriversWithin: findDriversWithin
+  findDriversWithin: findDriversWithin,
+  deleteCache: deleteCache
 }

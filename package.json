@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server/index.js",
+    "deletecache": "node database/deleteCache.js",
     "gendata": "node database/data/createDriverData.js",
     "gentestdata": "node test/data/createTestData.js",
     "filldb": "node database/data/insertIntoES.js",

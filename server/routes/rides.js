@@ -4,9 +4,9 @@ const { driverComms, rideService } = require('../../lib');
 const requestRide = async ctx => {
   //find nearby drivers
   try {
-    let p_lat = ctx.request.body.lat.toString();
-    let p_lng = ctx.request.body.lng.toString();
-    let p_zip = ctx.request.body.zip;
+    let p_lat = ctx.request.body.loc_lat.toString();
+    let p_lng = ctx.request.body.loc_lng.toString();
+    let p_zip = ctx.request.body.loc_zip;
     let dest_lat = ctx.request.body.dest_lat.toString();
     let dest_lng = ctx.request.body.dest_lng.toString();
     let dest_zip = ctx.request.body.dest_zip;

@@ -107,14 +107,14 @@ describe('routes: /drivers/logout', () => {
 
 });
 
-describe('routes: /request', () => {
+describe('routes: /requestdriver', () => {
   
   it('should return 200 when passed a request and there is a driver in the area', done => {
     chai.request(app)
-      .post('/request').send({
-        lat: 37.80072,
-        lng: -122.45656,
-        zip: 94123,
+      .post('/requestdriver').send({
+        loc_lat: 37.80072,
+        loc_lng: -122.45656,
+        loc_zip: 94123,
         dest_lat: 37.774929,
         dest_lng: -122.419416,
         dest_zip: 94117
@@ -129,7 +129,7 @@ describe('routes: /request', () => {
   it('should return 500 when there\'s an error', done => {
     let id = 'this-isnot-areal-idstring';
     chai.request(app)
-      .post('/request').send({
+      .post('/requestdriver').send({
         blarg: 'This is not the JSON you\'re looking for'
       })
       .end((err, res) => {
@@ -141,10 +141,10 @@ describe('routes: /request', () => {
 
   it('should remove the driver from the active driver pool upon request', done => {
     chai.request(app)
-      .post('/request').send({
-        lat: 37.80072,
-        lng: -122.45656,
-        zip: 94123,
+      .post('/requestdriver').send({
+        loc_lat: 37.80072,
+        loc_lng: -122.45656,
+        loc_zip: 94123,
         dest_lat: 37.774929,
         dest_lng: -122.419416,
         dest_zip: 94117
@@ -152,10 +152,10 @@ describe('routes: /request', () => {
       .end((err, res) => {
         let driverId1 = res.body.driver_id;
         chai.request(app)
-          .post('/request').send({
-            lat: 37.80072,
-            lng: -122.45656,
-            zip: 94123,
+          .post('/requestdriver').send({
+            loc_lat: 37.80072,
+            loc_lng: -122.45656,
+            loc_zip: 94123,
             dest_lat: 37.774929,
             dest_lng: -122.419416,
             dest_zip: 94117
@@ -172,10 +172,10 @@ describe('routes: /request', () => {
 
   it('should return the driver\'s info if a ride is found', done => {
     chai.request(app)
-      .post('/request').send({
-        lat: 37.80072,
-        lng: -122.45656,
-        zip: 94123,
+      .post('/requestdriver').send({
+        loc_lat: 37.80072,
+        loc_lng: -122.45656,
+        loc_zip: 94123,
         dest_lat: 37.774929,
         dest_lng: -122.419416,
         dest_zip: 94117
@@ -194,10 +194,10 @@ describe('routes: /request', () => {
 
   it('should return 500 when there is no driver in a 1km radius', done => {
     chai.request(app)
-      .post('/request').send({
-        lat: -37.80072,
-        lng: 122.45656,
-        zip: 00000,
+      .post('/requestdriver').send({
+        loc_lat: -37.80072,
+        loc_lng: 122.45656,
+        loc_zip: 22222,
         dest_lat: 37.774929,
         dest_lng: -122.419416,
         dest_zip: 94117
@@ -226,31 +226,56 @@ describe('routes: /drivers/track', () => {
   it('should update the driver\'s location in the cache', done => {
     let id = helpers.getRandomDriverId();
       chai.request(app)
-      .post('/drivers/track').send({
-        driverId: '0b23cab7-72a0-4ea2-a0d7-1914696db891',
-        lat: -37.80072,
-        lng: 122.45656,
-        zip: 00000,
-      })
-      .end((err, res) => {
-        cache.client.geopos(cacheKey.geocoords, cacheKey.geo(res.body.driver_id), (err, resp) => {
-          console.log(resp);
+        .put('/drivers/track').send({
+          driverId: '0b23cab7-72a0-4ea2-a0d7-1914696db891',
+          lat: -37.80072,
+          lng: 122.45656,
+          zip: 11111,
+        })
+        .end(async (err, res) => {
+          let loc = await cache.getDriverLocation('0b23cab7-72a0-4ea2-a0d7-1914696db891');
+          expect(parseFloat(loc.last_lat).toFixed(4)).to.equal('-37.8007');
+          expect(parseFloat(loc.last_lng).toFixed(4)).to.equal('122.4566');
+          expect(loc.last_zip).to.equal('11111');
           chai.request(app)
-            .post('/drivers/track').send({
-              id: '0b23cab7-72a0-4ea2-a0d7-1914696db891',
+            .put('/drivers/track').send({
+              driverId: '0b23cab7-72a0-4ea2-a0d7-1914696db891',
               lat: 37.80072,
               lng: -122.45656,
-              zip: 94117,
+              zip: 94123,
             })
-            .end((err, res) => {
-              cache.client.geopos(cacheKey.geocoords, cacheKey.geo(res.body.driver_id), (err, resp) => {
-                console.log(resp)
-                done();
-              });
+            .end(async (err, res) => {
+              let loc = await cache.getDriverLocation('0b23cab7-72a0-4ea2-a0d7-1914696db891');
+              expect(parseFloat(loc.last_lat).toFixed(4)).to.equal('37.8007');
+              expect(parseFloat(loc.last_lng).toFixed(4)).to.equal('-122.4566');
+              expect(loc.last_zip).to.equal('94123');
+              done();
             });
-        })
       });
   });
 
 });
-// '/drivers/track'
+
+describe('routes: /fares/data', () => {
+
+  it('should return 200 when requested', done => {
+    chai.request(app)
+      .get('/fares/data')
+      .end((err, res) => {
+        expect(err).to.be.null;
+        expect(res).to.have.status(200);
+        done();
+      });
+  });
+
+  it('should return an object', done => {
+    chai.request(app)
+      .get('/fares/data')
+      .end((err, res) => {
+        expect(err).to.be.null;
+        expect(res.body).to.be.an('object');
+        done();
+      });
+  });
+
+});
