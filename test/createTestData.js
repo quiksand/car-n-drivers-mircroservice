@@ -23,7 +23,7 @@ reader.on('line', line => {
       count++;
       let driverInfo = JSON.parse(line);
       info.push(driverInfo);
-      ok = writer.write(driverInfo.id + ',\n');
+      ok = writer.write(driverInfo.id + ',' + driverInfo.last_zip + ',' + driverInfo.last_lat + ',' + driverInfo.last_lng + '\n');
       if (count === numEntries) {
         reader.close();
       } 

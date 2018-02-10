@@ -75,9 +75,12 @@ const getDriverLocation = async driverId => {
 
 const deleteCache = async () => {
   let keys = await getKeysAsync('*');
-  for (let key = 0; key < keys.length; key++) {
-    client.del(keys[key]);
+  console.log(keys.length + ' keys will be deleted')
+  for (let k = 0; k < keys.length; k++) {
+    console.log(`${100 * k / keys.length}%`);
+    client.del(keys[k]);
   }
+  process.exit();
 };
 
 module.exports = {
