@@ -12,6 +12,11 @@
     "filldb": "node database/data/insertIntoES.js",
     "test": "mocha test/index.js --exit",
     "loadtest": "artillery run ./test/loadTest.yml",
+    "loadtest2": "artillery run ./test/loadTestWOES.yml",
+    "loadtest-fares": "artillery run ./test/loadTest-Fares.yml",
+    "loadtest-request": "artillery run ./test/loadTest-Request.yml",
+    "loadtest-track": "artillery run ./test/loadTest-Track.yml",
+    "loadtest-login": "artillery run ./test/loadTest-Login.yml",
     "start-dev": "nodemon server/index.js"
   },
   "keywords": [
